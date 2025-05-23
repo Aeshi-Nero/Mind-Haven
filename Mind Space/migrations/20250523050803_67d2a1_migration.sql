@@ -1,0 +1,64 @@
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  name TEXT,
+  profile_picture TEXT,
+  bio TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create posts table
+CREATE TABLE IF NOT EXISTS posts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create comments table
+CREATE TABLE IF NOT EXISTS comments (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create likes table
+CREATE TABLE IF NOT EXISTS likes (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, post_id)
+);
+
+-- Create groups table
+CREATE TABLE IF NOT EXISTS groups (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create group_members table
+CREATE TABLE IF NOT EXISTS group_members (
+  id SERIAL PRIMARY KEY,
+  group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(group_id, user_id)
+);
+
+-- Create group_messages table
+CREATE TABLE IF NOT EXISTS group_messages (
+  id SERIAL PRIMARY KEY,
+  group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
